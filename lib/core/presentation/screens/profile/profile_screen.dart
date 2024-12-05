@@ -21,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
                 // Texto de saludo
                 Expanded(
                   child: Text(
-                    'Hola',
+                    'José Pérez',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,

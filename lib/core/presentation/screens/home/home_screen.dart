@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
     return FlutterAppBaseScreen(
       appBar: const HomeAppBar(),
       body: ListView.builder(
+          physics: const BouncingScrollPhysics(),
           itemCount: myProducts.length,
           itemBuilder: (context, index) {
             return const EventCard();
