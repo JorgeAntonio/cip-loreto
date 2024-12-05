@@ -41,7 +41,7 @@ class ColegiadoDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'CIP: ${colegiado.item}',
+                        'CIP: ${colegiado.colegiatura}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Text(
@@ -74,6 +74,13 @@ class ColegiadoDetailScreen extends StatelessWidget {
                   gap16,
                   UserInfo(
                     label: 'Celular:',
+                    value: colegiado.celular != ''
+                        ? '${colegiado.celular}'
+                        : 'No registrado',
+                  ),
+                  gap16,
+                  UserInfo(
+                    label: 'Estado:',
                     value: colegiado.celular != ''
                         ? '${colegiado.celular}'
                         : 'No registrado',

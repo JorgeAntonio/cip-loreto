@@ -23,6 +23,7 @@ dependencies:
   flutter_app_ui:
     path: packages/flutter_app_ui
   http: ^1.2.2
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:

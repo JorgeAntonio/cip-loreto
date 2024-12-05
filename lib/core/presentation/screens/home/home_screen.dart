@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
       searchQuery = query.toLowerCase();
       filteredColegiados = allColegiados.where((colegiado) {
         final fullName =
-            '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}'
+            '${colegiado.colegiatura} ${colegiado.numeroDocumento} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}'
                 .toLowerCase();
         return fullName.contains(searchQuery);
       }).toList();
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
                 ),
-                hintText: "Buscar colegiado",
+                hintText: "Buscar por CIP o DNI",
                 hintStyle: TextStyle(
                     color: Colors.black.withOpacity(0.5), fontSize: 14),
                 prefixIcon: const Icon(Icons.search),
@@ -89,43 +89,47 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             gap16,
             Expanded(
-              child: filteredColegiados.isEmpty
-                  ? const Center(child: Text('No se encontraron resultados.'))
-                  : ListView.builder(
-                      itemCount: filteredColegiados.length,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final colegiado = filteredColegiados[index];
-                        return Card(
-                          elevation: 1,
-                          shadowColor: context.theme.shadowColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ListTile(
-                            trailing: Icon(
-                              Icons.arrow_forward_ios,
-                              size: 12,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                            title: Text(
-                              '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}',
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
-                            subtitle: Text(
-                              colegiado.capitulo,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            onTap: () {
-                              context.go(
-                                '/home/0/colegiado_detail',
-                                extra: colegiado,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+              child: filteredColegiados.isNotEmpty && searchQuery.isEmpty
+                  ? const Center(child: Text('Busca por CIP o DNI'))
+                  : filteredColegiados.isEmpty
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          itemCount: filteredColegiados.length,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final colegiado = filteredColegiados[index];
+                            return Card(
+                              elevation: 1,
+                              shadowColor: context.theme.shadowColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: ListTile(
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 12,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                                title: Text(
+                                  '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}',
+                                  style:
+                                      Theme.of(context).textTheme.labelMedium,
+                                ),
+                                subtitle: Text(
+                                  colegiado.capitulo,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                onTap: () {
+                                  context.go(
+                                    '/home/0/colegiado_detail',
+                                    extra: colegiado,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
             ),
           ],
         ),

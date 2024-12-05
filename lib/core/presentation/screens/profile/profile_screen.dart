@@ -1,9 +1,39 @@
+import 'package:cip_loreto/core/providers/auth_provider.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/home_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class ProfileScreen extends StatelessWidget {
+const secureStorage = FlutterSecureStorage();
+
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  String name = '';
+  String cip = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final storedName =
+        await secureStorage.read(key: 'name') ?? 'Nombre no disponible';
+    final storedCip =
+        await secureStorage.read(key: 'cip') ?? 'CIP no disponible';
+    setState(() {
+      name = storedName;
+      cip = storedCip;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +46,12 @@ class ProfileScreen extends StatelessWidget {
           Container(
             color: Colors.red,
             padding: const EdgeInsets.all(16.0),
-            child: const Row(
+            child: Row(
               children: [
-                // Texto de saludo
                 Expanded(
                   child: Text(
-                    'José Pérez',
-                    style: TextStyle(
+                    cip,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -30,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 // Avatar
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.orange,
                   child: Icon(
@@ -83,7 +112,7 @@ class ProfileScreen extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
-                    // Acción al cerrar sesión
+                    _logout(context);
                   },
                 ),
               ],
@@ -92,5 +121,14 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    await secureStorage.deleteAll(); // Limpia los datos almacenados
+    ref
+        .read(authProvider.notifier)
+        .logout(); // Cambia el estado de autenticación
+    // ignore: use_build_context_synchronously
+    Navigator.pushReplacementNamed(context, '/login'); // Redirige al login
   }
 }

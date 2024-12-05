@@ -27,7 +27,7 @@ class Colegiado {
     required this.capitulo,
     required this.correo,
     required this.codigoPais,
-    this.celular, // Campo nulo permitido.
+    this.celular,
     required this.tipoColegiado,
     required this.consejoDepartamental,
     this.pagos,
@@ -46,20 +46,23 @@ class Colegiado {
       capitulo: json['capitulo'],
       correo: json['correo'],
       codigoPais: json['codigo_pais'],
-      celular: json['celular']?.toString(), // Manejar valores nulos.
+      celular: json['celular']?.toString(),
       tipoColegiado: json['tipo_colegiado'],
       consejoDepartamental: json['consejo_departamental'],
-      // Verificamos si "pagos" es null antes de convertir
       pagos: json['pagos'] != null
-          ? Map.from(json["pagos"])
-              .map((k, v) => MapEntry<String, Pago>(k, Pago.fromJson(v)))
-          : null, // Asignamos null si "pagos" es null
+          ? (json['pagos'] as Map<String, dynamic>).map(
+              (mes, data) => MapEntry(
+                mes,
+                Pago.fromJson(data),
+              ),
+            )
+          : null,
     );
   }
 }
 
 class Pago {
-  final int monto;
+  final double monto; // Cambiado a double para reflejar el JSON.
   final DateTime fechaPago;
 
   Pago({
@@ -68,14 +71,12 @@ class Pago {
   });
 
   factory Pago.fromJson(Map<String, dynamic> json) => Pago(
-        monto:
-            (json["monto"] is double) ? json["monto"].toInt() : json["monto"],
-        fechaPago: DateTime.parse(json["fecha_pago"]),
+        monto: json['monto'].toDouble(), // Aseguramos que sea double.
+        fechaPago: DateTime.parse(json['fecha_pago']),
       );
 
   Map<String, dynamic> toJson() => {
         "monto": monto,
-        "fecha_pago":
-            "${fechaPago.year.toString().padLeft(4, '0')}-${fechaPago.month.toString().padLeft(2, '0')}-${fechaPago.day.toString().padLeft(2, '0')}",
+        "fecha_pago": fechaPago.toIso8601String(),
       };
 }
