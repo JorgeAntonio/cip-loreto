@@ -2,31 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
 
 class HomeTitle extends StatelessWidget {
-  const HomeTitle({super.key, this.title, required this.subtitle});
+  const HomeTitle({super.key, this.title, this.subtitle});
 
   final String? title;
-  final String subtitle;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: edgeInsetsH20,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != null)
-            Text(
-              title!,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-          gap4,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
           Text(
-            subtitle,
+            title!,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        gap4,
+        if (subtitle != null)
+          Text(
+            subtitle!,
             style: Theme.of(context).textTheme.bodySmall,
           ),
-        ],
-      ),
+      ],
     );
   }
 }

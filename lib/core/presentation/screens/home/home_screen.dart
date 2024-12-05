@@ -1,6 +1,7 @@
 import 'package:cip_loreto/features/home/data/college_model.dart';
 import 'package:cip_loreto/features/home/domain/fetch_data.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/home_app_bar.dart';
+import 'package:cip_loreto/features/home/presentation/widgest/home_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
 import 'package:go_router/go_router.dart';
@@ -57,45 +58,77 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return FlutterAppBaseScreen(
       appBar: const HomeAppBar(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
+      body: Padding(
+        padding: edgeInsetsH16,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            gap16,
+            const HomeTitle(
+              title: 'Colegiados',
+              subtitle:
+                  'Lista de colegiados del Consejo Departamental de Loreto',
+            ),
+            gap16,
+            TextField(
               onChanged: filterList,
               decoration: InputDecoration(
-                labelText: 'Buscar colegiado',
-                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor:
+                    Theme.of(context).colorScheme.secondary.withOpacity(0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
+                hintText: "Buscar colegiado",
+                hintStyle: TextStyle(
+                    color: Colors.black.withOpacity(0.5), fontSize: 14),
+                prefixIcon: const Icon(Icons.search),
+                prefixIconColor: Colors.black,
               ),
             ),
-          ),
-          Expanded(
-            child: filteredColegiados.isEmpty
-                ? const Center(child: Text('No se encontraron resultados.'))
-                : ListView.builder(
-                    itemCount: filteredColegiados.length,
-                    itemBuilder: (context, index) {
-                      final colegiado = filteredColegiados[index];
-                      return ListTile(
-                        title: Text(
-                            '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}'),
-                        subtitle: Text('Capítulo: ${colegiado.capitulo}'),
-                        onTap: () {
-                          // Navegar a la pantalla de detalles del colegiado
-                          context.go(
-                            '/home/0/colegiado_detail', // Define la ruta para los detalles
-                            extra:
-                                colegiado, // Pasar el objeto Colegiado a la pantalla de detalles
-                          );
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
+            gap16,
+            Expanded(
+              child: filteredColegiados.isEmpty
+                  ? const Center(child: Text('No se encontraron resultados.'))
+                  : ListView.builder(
+                      itemCount: filteredColegiados.length,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final colegiado = filteredColegiados[index];
+                        return Card(
+                          elevation: 1,
+                          shadowColor: context.theme.shadowColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ListTile(
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 12,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                            title: Text(
+                              '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}',
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                            subtitle: Text(
+                              colegiado.capitulo,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            onTap: () {
+                              context.go(
+                                '/home/0/colegiado_detail',
+                                extra: colegiado,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
