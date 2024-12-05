@@ -1,8 +1,6 @@
 import 'package:cip_loreto/core/navigation/app_bottom_navigation.dart';
 import 'package:cip_loreto/core/presentation/screens/home/home_screen.dart';
-import 'package:cip_loreto/core/presentation/screens/payments/payments_screen.dart';
 import 'package:cip_loreto/core/presentation/screens/profile/profile_screen.dart';
-import 'package:cip_loreto/core/presentation/screens/services/services_screen.dart';
 import 'package:flutter/material.dart';
 
 class IndexScreen extends StatefulWidget {
@@ -42,8 +40,6 @@ class _HomeScreenState extends State<IndexScreen> {
 
   final viewRoutes = const <Widget>[
     HomeScreen(),
-    ServicesScreen(),
-    PaymentsScreen(),
     ProfileScreen(),
   ];
 

@@ -20,12 +20,6 @@ class AppBottomNavigation extends StatelessWidget {
       case 1:
         GoRouter.of(context).go('/home/1');
         break;
-      case 2:
-        GoRouter.of(context).go('/home/2');
-        break;
-      case 3:
-        GoRouter.of(context).go('/home/3');
-        break;
       default:
         GoRouter.of(context).go('/home/0');
     }
@@ -39,19 +33,9 @@ class AppBottomNavigation extends StatelessWidget {
       onDestinationSelected: (value) => onDestinationSelected?.call(value),
       destinations: const [
         NavigationDestination(
-          selectedIcon: Icon(Icons.calendar_month),
-          icon: Icon(Icons.calendar_month_outlined),
-          label: 'Eventos',
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.credit_card),
-          icon: Icon(Icons.credit_card_outlined),
-          label: 'Servicios',
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.history),
-          icon: Icon(Icons.history_outlined),
-          label: 'Pagos',
+          selectedIcon: Icon(Icons.people),
+          icon: Icon(Icons.people_outline),
+          label: 'Colegiados',
         ),
         NavigationDestination(
           selectedIcon: Icon(Icons.person),
