@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fillColor:
                     Theme.of(context).colorScheme.secondary.withOpacity(0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
                 ),
                 hintText: "Buscar colegiado",

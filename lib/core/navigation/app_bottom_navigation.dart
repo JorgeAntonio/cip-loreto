@@ -20,6 +20,9 @@ class AppBottomNavigation extends StatelessWidget {
       case 1:
         GoRouter.of(context).go('/home/1');
         break;
+      case 2:
+        GoRouter.of(context).go('/home/2');
+        break;
       default:
         GoRouter.of(context).go('/home/0');
     }
@@ -36,6 +39,11 @@ class AppBottomNavigation extends StatelessWidget {
           selectedIcon: Icon(Icons.people),
           icon: Icon(Icons.people_outline),
           label: 'Colegiados',
+        ),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.payment),
+          icon: Icon(Icons.payment_outlined),
+          label: 'Pagos',
         ),
         NavigationDestination(
           selectedIcon: Icon(Icons.person),

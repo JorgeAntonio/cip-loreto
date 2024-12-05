@@ -46,49 +46,37 @@ class ColegiadoDetailScreen extends StatelessWidget {
                       ),
                       Text(
                         'DNI: ${colegiado.numeroDocumento}',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ],
                   ),
                   gap16,
-                  Text(
-                    'Nombre:',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                  UserInfo(
+                    label: 'Nombre:',
+                    value:
+                        '${colegiado.nombres} ${colegiado.apellidoPaterno} ${colegiado.apellidoMaterno}',
                   ),
                   gap16,
-                  const Text(
-                    'Capítulo:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    colegiado.capitulo,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  UserInfo(
+                    label: 'Capítulo:',
+                    value: colegiado.capitulo,
                   ),
                   gap16,
-                  const Text(
-                    'Tipo de Colegiado:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    colegiado.tipoColegiado,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  UserInfo(
+                    label: 'Tipo de Colegiado:',
+                    value: colegiado.tipoColegiado,
                   ),
                   gap16,
-                  const Text(
-                    'Correo y Celular:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  UserInfo(
+                    label: 'Correo:',
+                    value: colegiado.correo,
                   ),
-                  Text(
-                    'Correo: ${colegiado.correo}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  Text(
-                    'Celular: ${colegiado.celular ?? 'No disponible'}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  gap16,
+                  UserInfo(
+                    label: 'Celular:',
+                    value: colegiado.celular != ''
+                        ? '${colegiado.celular}'
+                        : 'No registrado',
                   ),
                 ],
               ),
@@ -115,9 +103,17 @@ class ColegiadoDetailScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8)),
                                 elevation: 1,
                                 child: ListTile(
-                                  title: Text('Monto: s/. ${pago.monto}'),
                                   subtitle: Text(
-                                      'Fecha de pago: ${pago.fechaPago.toLocal()}'),
+                                    'Monto: s/. ${pago.monto}',
+                                    textAlign: TextAlign.end,
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                  title: Text(
+                                    'Fecha de pago: ${pago.fechaPago.toLocal().toString().split(' ')[0]}',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
                                 ),
                               ),
                             ],
@@ -130,6 +126,32 @@ class ColegiadoDetailScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class UserInfo extends StatelessWidget {
+  const UserInfo({super.key, required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
     );
   }
 }

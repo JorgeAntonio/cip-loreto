@@ -22,7 +22,7 @@ class AppRouter {
           name: Routes.auth.name,
           builder: (context, state) {
             final pageIndex = int.parse(state.pathParameters['page'] ?? '0');
-            if (pageIndex < 0 || pageIndex > 1) context.go('/home/0');
+            if (pageIndex < 0 || pageIndex > 2) context.go('/home/0');
             return IndexScreen(
               pageIndex: pageIndex,
               onPageChanged: (int value) {
@@ -38,7 +38,6 @@ class AppRouter {
                 return const ProfileScreen();
               },
             ),
-            // Ruta para el detalle del colegiado
             GoRoute(
               path: 'colegiado_detail',
               builder: (context, state) {
