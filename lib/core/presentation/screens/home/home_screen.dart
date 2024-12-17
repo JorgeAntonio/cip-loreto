@@ -5,6 +5,7 @@ import 'package:cip_loreto/features/home/presentation/widgest/home_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       // Maneja errores si es necesario
-      print('Error al cargar los datos: $e');
+      Logger().e('Error al cargar los datos: $e');
     }
   }
 
