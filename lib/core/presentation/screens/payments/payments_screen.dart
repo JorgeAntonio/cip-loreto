@@ -23,14 +23,14 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   void initState() {
     super.initState();
     loadData();
-    _loadAndFilterByCip(); // Llama al método para cargar y filtrar por CIP
+    _loadAndFilterByCip();
   }
 
   Future<void> _loadAndFilterByCip() async {
     try {
-      final cip = await secureStorage.read(key: 'cip'); // Lee el CIP almacenado
+      final cip = await secureStorage.read(key: 'cip');
       if (cip != null) {
-        filterOneAccordingToColegiatura(cip); // Usa el CIP para filtrar
+        filterOneAccordingToColegiatura(cip);
       } else {
         print('No se encontró un CIP almacenado.');
       }
@@ -76,6 +76,90 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     });
   }
 
+  void _handlePayment(Colegiado colegiado) {
+    String? selectedCuota;
+    final cuotas = List.generate(12, (index) => (index + 1).toString());
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) => AlertDialog(
+            title: const Text('Seleccionar Cuota para Pagar'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButton<String>(
+                  hint: const Text('Seleccione una cuota'),
+                  value: selectedCuota,
+                  items: cuotas.map((cuota) {
+                    return DropdownMenuItem<String>(
+                      value: cuota,
+                      child: Text('Cuota $cuota'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setStateDialog(() {
+                      selectedCuota = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedCuota != null) {
+                      Navigator.pop(context);
+                      _simulatePaymentProcessing(colegiado, selectedCuota!);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Por favor seleccione una cuota.')),
+                      );
+                    }
+                  },
+                  child: const Text('Confirmar Pago'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _simulatePaymentProcessing(Colegiado colegiado, String cuota) async {
+    // Muestra un diálogo de carga
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Procesando Pago...'),
+          content: Row(
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Por favor espere...'),
+            ],
+          ),
+        );
+      },
+    );
+
+    // Simula el tiempo de procesamiento
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Cierra el diálogo de carga
+    if (mounted) Navigator.pop(context);
+
+    // Muestra la confirmación
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content:
+              Text('Pago realizado para Cuota $cuota - ${colegiado.nombres}')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FlutterAppBaseScreen(
@@ -88,11 +172,21 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               itemBuilder: (context, index) {
                 final colegiado = filteredColegiados[index];
                 final payment = colegiado.pagos?.values;
+
                 if (payment != null) {
-                  return PaymentDetailWidget(payments: payment);
+                  return Column(
+                    children: [
+                      PaymentDetailWidget(payments: payment),
+                      ElevatedButton(
+                        onPressed: () {
+                          _handlePayment(colegiado);
+                        },
+                        child: const Text('Pagar'),
+                      ),
+                    ],
+                  );
                 } else {
-                  return const SizedBox
-                      .shrink(); // or handle the case where there are no payments
+                  return const SizedBox.shrink();
                 }
               },
             ),

@@ -50,6 +50,11 @@ class AppBottomNavigation extends StatelessWidget {
           icon: Icon(Icons.person_outline),
           label: 'Perfil',
         ),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.newspaper),
+          icon: Icon(Icons.newspaper_outlined),
+          label: 'Noticias',
+        ),
       ],
     );
   }
