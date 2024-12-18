@@ -1,20 +1,23 @@
+import 'package:cip_loreto/core/providers/payments_provider.dart';
+import 'package:cip_loreto/core/providers/save_payments.dart';
 import 'package:cip_loreto/features/home/data/college_model.dart';
 import 'package:cip_loreto/features/home/domain/fetch_data.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/home_app_bar.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/paryment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 
-class PaymentsScreen extends StatefulWidget {
+class PaymentsScreen extends ConsumerStatefulWidget {
   const PaymentsScreen({super.key});
 
   @override
-  State<PaymentsScreen> createState() => _PaymentsScreenState();
+  ConsumerState<PaymentsScreen> createState() => _PaymentsScreenState();
 }
 
-class _PaymentsScreenState extends State<PaymentsScreen> {
+class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   List<Colegiado> allColegiados = [];
   List<Colegiado> filteredColegiados = [];
   String searchQuery = "";
@@ -25,6 +28,18 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     super.initState();
     loadData();
     _loadAndFilterByCip();
+  }
+
+  Future<void> loadPagoStates(Colegiado colegiado) async {
+    for (var cuota in colegiado.pagos!.keys) {
+      final estado =
+          await loadPagoState(colegiado.colegiatura as String, cuota);
+      if (estado == "Pagado") {
+        // Actualiza el estado en el objeto Colegiado
+        colegiado.pagos![cuota] =
+            colegiado.pagos![cuota]!.copyWith(estado: "Pagado");
+      }
+    }
   }
 
   Future<void> _loadAndFilterByCip() async {
@@ -106,7 +121,15 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   },
                 ),
                 const SizedBox(height: 10),
-                ElevatedButton(
+                FilledButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.red),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
                   onPressed: () async {
                     if (selectedCuota != null) {
                       Navigator.pop(context);
@@ -129,15 +152,17 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   }
 
   void _simulatePaymentProcessing(Colegiado colegiado, String cuota) async {
+    //carga el riverpod provider
+    final pagoStateNotifier = ref.read(pagoStateProvider.notifier);
     // Muestra un diálogo de carga
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Procesando Pago...'),
+        return const AlertDialog(
+          title: Text('Procesando Pago...'),
           content: Row(
-            children: const [
+            children: [
               CircularProgressIndicator(),
               SizedBox(width: 16),
               Text('Por favor espere...'),
@@ -153,11 +178,45 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     // Cierra el diálogo de carga
     if (mounted) Navigator.pop(context);
 
+    // Actualiza el estado de la cuota seleccionada
+    setState(() {
+      final cuotaIndex =
+          int.parse(cuota) - 1; // Índice basado en el número de cuota
+      final mesPagado = colegiado.pagos?.keys.elementAt(cuotaIndex);
+
+      if (mesPagado != null) {
+        final updatedPago = colegiado.pagos![mesPagado]!.copyWith(
+          estado: "Pagado",
+          fechaPago: DateTime.now(),
+        );
+
+        final updatedPagos = Map<String, Pago>.from(colegiado.pagos!)
+          ..[mesPagado] = updatedPago;
+
+        final updatedColegiado = colegiado.copyWith(pagos: updatedPagos);
+
+        // Actualizar la lista de colegiados
+        filteredColegiados = filteredColegiados.map((c) {
+          return c.colegiatura == updatedColegiado.colegiatura
+              ? updatedColegiado
+              : c;
+        }).toList();
+
+        // Actualiza el estado de la cuota en el almacenamiento seguro
+        pagoStateNotifier.actualizarPago(
+          colegiado.colegiatura.toString(),
+          mesPagado,
+          "Pagado",
+        );
+      }
+    });
+
     // Muestra la confirmación
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content:
-              Text('Pago realizado para Cuota $cuota - ${colegiado.nombres}')),
+        content:
+            Text('Pago realizado para Cuota $cuota - ${colegiado.nombres}'),
+      ),
     );
   }
 
@@ -173,18 +232,41 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
               itemBuilder: (context, index) {
                 final colegiado = filteredColegiados[index];
                 final payment = colegiado.pagos?.values;
-
                 if (payment != null) {
-                  return Column(
-                    children: [
-                      PaymentDetailWidget(payments: payment),
-                      ElevatedButton(
-                        onPressed: () {
-                          _handlePayment(colegiado);
-                        },
-                        child: const Text('Pagar'),
-                      ),
-                    ],
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: Column(
+                      children: [
+                        PaymentDetailWidget(
+                          payments: payment,
+                        ),
+                        const Divider(
+                          color: Colors.red,
+                          thickness: 1,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    WidgetStateProperty.all(Colors.red),
+                                shape: WidgetStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                _handlePayment(colegiado);
+                              },
+                              child: const Text('Pagar'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 } else {
                   return const SizedBox.shrink();

@@ -1,4 +1,5 @@
 import 'package:cip_loreto/features/home/data/college_model.dart';
+import 'package:cip_loreto/features/home/presentation/widgest/home_title.dart';
 import 'package:flutter/material.dart';
 
 class PaymentDetailWidget extends StatelessWidget {
@@ -17,44 +18,38 @@ class PaymentDetailWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            for (var payment in payments) ...[
-              // Cuota y monto
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Cuota ${payments.toList().indexOf(payment) + 1}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    "Monto: s/. ${payment.monto.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Fecha de pago
-              Text(
-                'Fecha Pago | ${payment.fechaPago.toLocal().toString().split(' ')[0]}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
+            const HomeTitle(
+              title: 'Detalle de Pagos:',
+            ),
             const SizedBox(height: 8),
-            // Línea divisora
-            const Divider(
-              color: Colors.red,
-              thickness: 1,
+            Column(
+              children: payments.map((payment) {
+                final estado = payment.estado ?? "Pendiente";
+                return ListTile(
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Cuota ${payments.toList().indexOf(payment) + 1}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text('Monto: ${payment.monto}'),
+                    ],
+                  ),
+                  subtitle: Text(
+                      'Fecha de Pago: ${payment.fechaPago.toLocal().toString().split(' ')[0]}'),
+                  trailing: Text(
+                    estado,
+                    style: TextStyle(
+                      color: estado == "Pagado" ? Colors.green : Colors.red,
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),

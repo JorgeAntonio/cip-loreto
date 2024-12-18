@@ -59,19 +59,68 @@ class Colegiado {
           : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "item": item,
+      "apellido_paterno": apellidoPaterno,
+      "apellido_materno": apellidoMaterno,
+      "nombres": nombres,
+      "colegiatura": colegiatura,
+      "tipo_documento": tipoDocumento,
+      "numero_documento": numeroDocumento,
+      "codigo_capitulo": codigoCapitulo,
+      "capitulo": capitulo,
+      "correo": correo,
+      "codigo_pais": codigoPais,
+      "celular": celular,
+      "tipo_colegiado": tipoColegiado,
+      "consejo_departamental": consejoDepartamental,
+      "pagos": pagos?.map(
+        (mes, data) => MapEntry(
+          mes,
+          data.toJson(),
+        ),
+      ),
+    };
+  }
+
+  Colegiado copyWith({
+    Map<String, Pago>? pagos,
+  }) {
+    return Colegiado(
+      item: item,
+      apellidoPaterno: apellidoPaterno,
+      apellidoMaterno: apellidoMaterno,
+      nombres: nombres,
+      colegiatura: colegiatura,
+      tipoDocumento: tipoDocumento,
+      numeroDocumento: numeroDocumento,
+      codigoCapitulo: codigoCapitulo,
+      capitulo: capitulo,
+      correo: correo,
+      codigoPais: codigoPais,
+      tipoColegiado: tipoColegiado,
+      consejoDepartamental: consejoDepartamental,
+      pagos: pagos ?? this.pagos,
+    );
+  }
 }
 
 class Pago {
-  final double monto; // Cambiado a double para reflejar el JSON.
+  final double monto;
   final DateTime fechaPago;
+  final String? estado;
 
-  Pago({
+  Pago(
+    this.estado, {
     required this.monto,
     required this.fechaPago,
   });
 
   factory Pago.fromJson(Map<String, dynamic> json) => Pago(
-        monto: json['monto'].toDouble(), // Aseguramos que sea double.
+        json['estado'],
+        monto: json['monto'].toDouble(),
         fechaPago: DateTime.parse(json['fecha_pago']),
       );
 
@@ -79,4 +128,17 @@ class Pago {
         "monto": monto,
         "fecha_pago": fechaPago.toIso8601String(),
       };
+
+  /// Método copyWith para crear una copia modificada de Pago
+  Pago copyWith({
+    double? monto,
+    DateTime? fechaPago,
+    String? estado,
+  }) {
+    return Pago(
+      estado ?? this.estado,
+      monto: monto ?? this.monto,
+      fechaPago: fechaPago ?? this.fechaPago,
+    );
+  }
 }
