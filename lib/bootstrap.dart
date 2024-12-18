@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'core/core.dart';
 
@@ -19,6 +20,9 @@ Future<void> bootstrap(Environment environment) async {
         // overrides: overrides(environment),
         child: CipLoreto(),
       );
+
+      Sqflite.setDebugModeOn(true); // Activa el modo de depuración
+
       runApp(app);
       FlutterError.onError = (details) {
         if (enableLogging) {

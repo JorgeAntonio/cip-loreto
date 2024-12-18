@@ -39,19 +39,19 @@ class AppBottomNavigation extends StatelessWidget {
       onDestinationSelected: (value) => onDestinationSelected?.call(value),
       destinations: const [
         NavigationDestination(
-          selectedIcon: Icon(Icons.calendar_month),
-          icon: Icon(Icons.calendar_month_outlined),
-          label: 'Eventos',
+          selectedIcon: Icon(Icons.people),
+          icon: Icon(Icons.people_outline),
+          label: 'Colegiados',
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.credit_card),
-          icon: Icon(Icons.credit_card_outlined),
-          label: 'Servicios',
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.history),
-          icon: Icon(Icons.history_outlined),
+          selectedIcon: Icon(Icons.payment),
+          icon: Icon(Icons.payment_outlined),
           label: 'Pagos',
+        ),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.newspaper),
+          icon: Icon(Icons.newspaper_outlined),
+          label: 'Noticias',
         ),
         NavigationDestination(
           selectedIcon: Icon(Icons.person),

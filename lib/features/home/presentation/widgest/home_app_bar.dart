@@ -14,12 +14,18 @@ class HomeAppBar extends StatelessWidget {
           height: 20,
         ),
       ),
-      title: const Column(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Colegio de Ingenieros del Perú',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-          Text(
+          const Text(
             'Consejo Departamental de Loreto',
             style: TextStyle(
               fontSize: 12,

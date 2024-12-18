@@ -1,0 +1,44 @@
+{
+  "publicaciones": [
+    {
+      "id": 1,
+      "titulo": "III Encuentro de Integración de Ingenieros Adultos Mayores",
+      "fecha": "2024-12-15",
+      "contenido": "Se culminó el III Encuentro de Integración de Ingenieros Adultos Mayores en el Centro Campestre del Ingeniero. La convocatoria fue un éxito y los participantes disfrutaron de diversas actividades.",
+      "imagen": "https://scontent-lim1-1.xx.fbcdn.net/v/t39.30808-6/268296871_2119926224850910_4058486111575503917_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=TztgISv0dc8Q7kNvgFkcE1j&_nc_zt=23&_nc_ht=scontent-lim1-1.xx&_nc_gid=AE2QBIyLqNhza35QVTeyfV3&oh=00_AYBCQlTPpsHSlcVemn-qhrU4hPj-u7ZY8DdQjl24hgNfFw&oe=6768EFD5",
+      "enlace": "https://www.facebook.com/CipCdLoreto/posts/2119930881517111/"
+    },
+    {
+      "id": 2,
+      "titulo": "Navidad del Niño Ingeniero",
+      "fecha": "2024-12-14",
+      "contenido": "Con éxito culminó la actividad por la Navidad del Niño Ingeniero. El evento incluyó una chocolatada y diversas actividades recreativas para los niños.",
+      "imagen": "https://scontent-lim1-1.xx.fbcdn.net/v/t39.30808-6/269714481_2119658298211036_2259492245764635688_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_ohc=F1qi199WF7sQ7kNvgGoZ9rt&_nc_zt=23&_nc_ht=scontent-lim1-1.xx&_nc_gid=AhejNVduALqE-l0FMWUYWoA&oh=00_AYDCdUM7oeCUon7FeW6HcYtv_SJ374TdgkYX4PKIU__P2w&oe=6768C699",
+      "enlace": "https://www.facebook.com/CipCdLoreto/posts/2119660564877476/"
+    },
+    {
+      "id": 3,
+      "titulo": "Ceremonia de entrega de resolución de cambio de nombre",
+      "fecha": "2024-11-09",
+      "contenido": "Ceremonia de entrega de resolución de cambio de nombre, seguimos adelante con paso firme. Capitulo de Ingeniería en Industrias Alimentarias y Afines. Objetivo logrado",
+      "imagen": "https://www.ciploreto.org.pe/pagina_web/notas//1727123113-449987461_454364834113012_5344521035331708560_n.webp",
+      "enlace": "https://www.ciploreto.org.pe/informacion_de_noticias?data=Ceremonia_de_entrega_de_resolucion_de_cambio_de_nombre32"
+    },
+    {
+      "id": 4,
+      "titulo": "Bicicleteada",
+      "fecha": "2024-11-09",
+      "contenido": "Una actividad deportiva y recreativa organizada para fomentar la salud y la integración entre los ingenieros y sus familias.",
+      "imagen": "https://www.ciploreto.org.pe/pagina_web/notas//1731166516-Imagen%20de%20WhatsApp%202024-11-09%20a%20las%2010.25.49_0b07d46f.webp",
+      "enlace": "https://www.ciploreto.org.pe/noticias"
+    },
+    {
+      "id": 5,
+      "titulo": "Desfile Institucional",
+      "fecha": "2024-11-09",
+      "contenido": "Conmemoración del aniversario del Colegio de Ingenieros con un desfile institucional que destacó la presencia y el compromiso de los profesionales.",
+      "imagen": "https://www.ciploreto.org.pe/pagina_web/notas//1731166182-Imagen%20de%20WhatsApp%202024-11-09%20a%20las%2010.21.45_f62e9f0c.webp",
+      "enlace": "https://www.ciploreto.org.pe/noticias"
+    }
+  ]
+}
