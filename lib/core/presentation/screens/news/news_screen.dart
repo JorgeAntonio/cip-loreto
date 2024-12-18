@@ -1,9 +1,11 @@
+import 'package:cip_loreto/features/home/data/post_model.dart';
+import 'package:cip_loreto/features/home/domain/fetch_data.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/home_app_bar.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/home_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
+import 'package:logger/logger.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -14,30 +16,30 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   List<Map<String, dynamic>> news = [];
+  List<Publicacion> jsonNews = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchNews();
+    loadJsonNews();
   }
 
-  Future<void> fetchNews() async {
-    final response = await http
-        .get(Uri.parse('https://jsonplaceholder.typicode.com/posts?_limit=10'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+  Future<void> loadJsonNews() async {
+    try {
+      final res = await loadPublications();
       setState(() {
-        news = data.map((item) {
+        news = res.map((item) {
           return {
-            'title': item['title'],
-            'description': item['body'],
+            'imagen': item.imagen,
+            'title': item.titulo,
+            'description': item.contenido,
           };
         }).toList();
         isLoading = false;
       });
-    } else {
-      throw Exception('Failed to load news');
+    } catch (e) {
+      Logger().e('Error al cargar las noticias: $e');
     }
   }
 
@@ -77,10 +79,40 @@ class _NewsScreenState extends State<NewsScreen> {
                                   topRight: Radius.circular(15.0),
                                 ),
                                 child: Image.network(
-                                  'https://picsum.photos/200?random=$index',
+                                  news[index]['imagen']!,
                                   height: 150,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    } else {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  errorBuilder: (BuildContext context,
+                                      Object error, StackTrace? stackTrace) {
+                                    return const Center(
+                                      child: Icon(
+                                        Icons.broken_image,
+                                        size: 120,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                               Padding(

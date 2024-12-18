@@ -1,4 +1,3 @@
-import 'package:cip_loreto/core/providers/payments_provider.dart';
 import 'package:cip_loreto/core/providers/save_payments.dart';
 import 'package:cip_loreto/features/home/data/college_model.dart';
 import 'package:cip_loreto/features/home/domain/fetch_data.dart';
@@ -31,13 +30,15 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   }
 
   Future<void> loadPagoStates(Colegiado colegiado) async {
+    final dbHelper = DatabaseHelper();
     for (var cuota in colegiado.pagos!.keys) {
-      final estado =
-          await loadPagoState(colegiado.colegiatura as String, cuota);
-      if (estado == "Pagado") {
-        // Actualiza el estado en el objeto Colegiado
-        colegiado.pagos![cuota] =
-            colegiado.pagos![cuota]!.copyWith(estado: "Pagado");
+      final pagoData =
+          await dbHelper.loadPago(colegiado.colegiatura.toString(), cuota);
+      if (pagoData != null && pagoData['estado'] == "Pagado") {
+        colegiado.pagos![cuota] = colegiado.pagos![cuota]!.copyWith(
+          estado: "Pagado",
+          fechaPago: DateTime.parse(pagoData['fechaPago']),
+        );
       }
     }
   }
@@ -58,10 +59,15 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   Future<void> loadData() async {
     try {
       final colegiados = await loadColegiados();
-      setState(() {
-        allColegiados = colegiados;
-        filteredColegiados = colegiados;
-      });
+      for (var colegiado in colegiados) {
+        await loadPagoStates(colegiado); // Carga los estados de SQLite
+      }
+      if (mounted) {
+        setState(() {
+          allColegiados = colegiados;
+          filteredColegiados = colegiados;
+        });
+      }
     } catch (e) {
       Logger().e('Error al cargar los colegiados: $e');
     }
@@ -152,8 +158,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   }
 
   void _simulatePaymentProcessing(Colegiado colegiado, String cuota) async {
-    //carga el riverpod provider
-    final pagoStateNotifier = ref.read(pagoStateProvider.notifier);
+    final dbHelper = DatabaseHelper();
     // Muestra un diálogo de carga
     showDialog(
       context: context,
@@ -202,8 +207,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
               : c;
         }).toList();
 
-        // Actualiza el estado de la cuota en el almacenamiento seguro
-        pagoStateNotifier.actualizarPago(
+        dbHelper.savePago(
           colegiado.colegiatura.toString(),
           mesPagado,
           "Pagado",

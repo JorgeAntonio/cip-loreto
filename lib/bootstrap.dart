@@ -19,6 +19,7 @@ Future<void> bootstrap(Environment environment) async {
         // overrides: overrides(environment),
         child: CipLoreto(),
       );
+
       runApp(app);
       FlutterError.onError = (details) {
         if (enableLogging) {

@@ -1,16 +1,58 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-// Función para guardar el estado del pago
-Future<void> savePagoState(
-    String colegiatura, String mes, String estado) async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = '$colegiatura-$mes'; // Clave única para cada pago
-  prefs.setString(key, estado); // Guarda el estado como un String
-}
+class DatabaseHelper {
+  static Database? _database;
 
-// Función para cargar el estado del pago
-Future<String?> loadPagoState(String colegiatura, String mes) async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = '$colegiatura-$mes';
-  return prefs.getString(key); // Retorna el estado guardado
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+
+  Future<Database> _initDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'pagos.db');
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) {
+        db.execute('''
+          CREATE TABLE pagos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            colegiatura TEXT,
+            cuota TEXT,
+            estado TEXT,
+            fechaPago TEXT
+          )
+        ''');
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> loadPago(
+      String colegiatura, String cuota) async {
+    final db = await database;
+    final result = await db.query(
+      'pagos',
+      where: 'colegiatura = ? AND cuota = ?',
+      whereArgs: [colegiatura, cuota],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
+  Future<void> savePago(String colegiatura, String cuota, String estado) async {
+    final db = await database;
+    await db.insert(
+      'pagos',
+      {
+        'colegiatura': colegiatura,
+        'cuota': cuota,
+        'estado': estado,
+        'fechaPago': DateTime.now().toIso8601String()
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 }

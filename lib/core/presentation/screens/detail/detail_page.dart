@@ -58,7 +58,7 @@ class ColegiadoDetailScreen extends StatelessWidget {
                   ),
                   gap16,
                   UserInfo(
-                    label: 'Capítulo:',
+                    label: 'Especialidad:',
                     value: colegiado.capitulo,
                   ),
                   gap16,
@@ -79,11 +79,9 @@ class ColegiadoDetailScreen extends StatelessWidget {
                         : 'No registrado',
                   ),
                   gap16,
-                  UserInfo(
+                  const UserInfo(
                     label: 'Estado:',
-                    value: colegiado.celular != ''
-                        ? '${colegiado.celular}'
-                        : 'No registrado',
+                    value: 'Activo',
                   ),
                 ],
               ),
