@@ -5,6 +5,7 @@ import 'package:cip_loreto/features/home/presentation/widgest/paryment_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_app_ui/flutter_app_ui.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logger/logger.dart';
 
 class PaymentsScreen extends StatefulWidget {
   const PaymentsScreen({super.key});
@@ -32,10 +33,10 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       if (cip != null) {
         filterOneAccordingToColegiatura(cip);
       } else {
-        print('No se encontró un CIP almacenado.');
+        Logger().w('No se encontró el CIP en el almacenamiento seguro.');
       }
     } catch (e) {
-      print('Error al recuperar el CIP: $e');
+      Logger().e('Error al leer el CIP del almacenamiento seguro: $e');
     }
   }
 
@@ -47,7 +48,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         filteredColegiados = colegiados;
       });
     } catch (e) {
-      print('Error al cargar los datos: $e');
+      Logger().e('Error al cargar los colegiados: $e');
     }
   }
 

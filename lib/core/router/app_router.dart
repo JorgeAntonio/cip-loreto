@@ -31,7 +31,7 @@ class AppRouter {
           name: Routes.auth.name,
           builder: (context, state) {
             final pageIndex = int.parse(state.pathParameters['page'] ?? '0');
-            if (pageIndex < 0 || pageIndex > 2) context.go('/home/0');
+            if (pageIndex < 0 || pageIndex > 3) context.go('/home/0');
             return IndexScreen(
               pageIndex: pageIndex,
               onPageChanged: (int value) {
