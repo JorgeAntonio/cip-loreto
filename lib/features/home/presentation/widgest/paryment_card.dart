@@ -2,7 +2,6 @@ import 'package:cip_loreto/features/home/data/college_model.dart';
 import 'package:cip_loreto/features/home/presentation/widgest/home_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 class PaymentDetailWidget extends StatelessWidget {
@@ -83,17 +82,12 @@ class PaymentDetailWidget extends StatelessWidget {
 }
 
 Future<void> _downloadPdf(BuildContext context) async {
-  final pdf = pw.Document();
+  // Carga el archivo PDF desde los assets
   final data = await rootBundle.load('assets/doc/boleta.pdf');
   final bytes = data.buffer.asUint8List();
 
-  pdf.addPage(pw.Page(
-    build: (pw.Context context) {
-      return pw.Center(
-        child: pw.Image(pw.MemoryImage(bytes)),
-      );
-    },
-  ));
-
-  await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+  // Usa el archivo PDF original en lugar de intentar incrustarlo como imagen
+  await Printing.layoutPdf(
+    onLayout: (_) async => bytes,
+  );
 }

@@ -21,12 +21,83 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   List<Colegiado> filteredColegiados = [];
   String searchQuery = "";
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  bool isLoading = true; // Nuevo estado para manejar el loader
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   loadData().then((_) {
+  //     _loadAndFilterByCip();
+  //   });
+  // }
   @override
   void initState() {
     super.initState();
-    loadData();
-    _loadAndFilterByCip();
+    _loadAndFilterByCip(); // Filtrar directamente al inicializar
+  }
+
+  // Future<void> _loadAndFilterByCip() async {
+  //   try {
+  //     final cip = await secureStorage.read(key: 'cip');
+  //     if (cip != null) {
+  //       filterOneAccordingToColegiatura(cip);
+  //     } else {
+  //       Logger().w('No se encontró el CIP en el almacenamiento seguro.');
+  //     }
+  //   } catch (e) {
+  //     Logger().e('Error al leer el CIP del almacenamiento seguro: $e');
+  //   }
+  // }
+
+  Future<void> _loadAndFilterByCip() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final cip = await secureStorage.read(key: 'cip');
+      if (cip != null) {
+        final colegiados = await loadColegiados();
+        final colegiado = colegiados.firstWhere(
+          (c) => c.colegiatura.toString() == cip,
+          orElse: () => Colegiado(
+            item: 0,
+            apellidoPaterno: '',
+            apellidoMaterno: '',
+            nombres: '',
+            colegiatura: 0,
+            tipoDocumento: 0,
+            numeroDocumento: '',
+            codigoCapitulo: 0,
+            capitulo: '',
+            correo: '',
+            codigoPais: 0,
+            tipoColegiado: '',
+            consejoDepartamental: '',
+          ),
+        );
+
+        if (colegiado.item != 0) {
+          await loadPagoStates(
+              colegiado); // Carga los pagos del colegiado filtrado
+          setState(() {
+            filteredColegiados = [colegiado];
+          });
+        } else {
+          setState(() {
+            filteredColegiados = [];
+          });
+        }
+      } else {
+        Logger().w('No se encontró el CIP en el almacenamiento seguro.');
+      }
+    } catch (e) {
+      Logger().e('Error al filtrar por CIP: $e');
+    } finally {
+      setState(() {
+        isLoading = false; // Finaliza el estado de carga
+      });
+    }
   }
 
   Future<void> loadPagoStates(Colegiado colegiado) async {
@@ -43,30 +114,19 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
     }
   }
 
-  Future<void> _loadAndFilterByCip() async {
-    try {
-      final cip = await secureStorage.read(key: 'cip');
-      if (cip != null) {
-        filterOneAccordingToColegiatura(cip);
-      } else {
-        Logger().w('No se encontró el CIP en el almacenamiento seguro.');
-      }
-    } catch (e) {
-      Logger().e('Error al leer el CIP del almacenamiento seguro: $e');
-    }
-  }
-
   Future<void> loadData() async {
     try {
       final colegiados = await loadColegiados();
-      for (var colegiado in colegiados) {
-        await loadPagoStates(colegiado); // Carga los estados de SQLite
-      }
       if (mounted) {
         setState(() {
           allColegiados = colegiados;
-          filteredColegiados = colegiados;
+          filteredColegiados = colegiados; // Carga inicial sin estados de pago
         });
+      }
+
+      // Cargar estados de pago después
+      for (var colegiado in colegiados) {
+        await loadPagoStates(colegiado); // Carga los estados de SQLite
       }
     } catch (e) {
       Logger().e('Error al cargar los colegiados: $e');
@@ -74,6 +134,11 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   }
 
   void filterOneAccordingToColegiatura(String colegiatura) {
+    if (allColegiados.isEmpty) {
+      Logger().w('La lista de colegiados está vacía. No se puede filtrar.');
+      return;
+    }
+
     setState(() {
       final colegiado = allColegiados.firstWhere(
         (c) => c.colegiatura.toString() == colegiatura,
@@ -228,55 +293,57 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   Widget build(BuildContext context) {
     return FlutterAppBaseScreen(
       appBar: const HomeAppBar(),
-      body: filteredColegiados.isEmpty
-          ? const Center(child: Text("No se encontraron pagos"))
-          : ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: filteredColegiados.length,
-              itemBuilder: (context, index) {
-                final colegiado = filteredColegiados[index];
-                final payment = colegiado.pagos?.values;
-                if (payment != null) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 32),
-                    child: Column(
-                      children: [
-                        PaymentDetailWidget(
-                          payments: payment,
-                        ),
-                        const Divider(
-                          color: Colors.red,
-                          thickness: 1,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: FilledButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStateProperty.all(Colors.red),
-                                shape: WidgetStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : filteredColegiados.isEmpty
+              ? const Center(child: Text("No se encontraron pagos"))
+              : ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: filteredColegiados.length,
+                  itemBuilder: (context, index) {
+                    final colegiado = filteredColegiados[index];
+                    final payment = colegiado.pagos?.values;
+                    if (payment != null) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Column(
+                          children: [
+                            PaymentDetailWidget(
+                              payments: payment,
+                            ),
+                            const Divider(
+                              color: Colors.red,
+                              thickness: 1,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: FilledButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStateProperty.all(Colors.red),
+                                    shape: WidgetStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
                                   ),
+                                  onPressed: () {
+                                    _handlePayment(colegiado);
+                                  },
+                                  child: const Text('Pagar'),
                                 ),
                               ),
-                              onPressed: () {
-                                _handlePayment(colegiado);
-                              },
-                              child: const Text('Pagar'),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
-            ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
     );
   }
 }

@@ -32,7 +32,6 @@ dependencies:
   printing: ^5.13.4
   sqflite: ^2.4.1
   path: ^1.9.0
-  sqflite_common_ffi: ^2.3.4+4
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +71,7 @@ flutter:
     - assets/icon/
     - assets/data/
     - assets/doc/
+    - assets/database/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

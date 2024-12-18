@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'core/core.dart';
 
@@ -21,9 +21,7 @@ Future<void> bootstrap(Environment environment) async {
         child: CipLoreto(),
       );
 
-      // Inicializa `databaseFactory` para usar FFI
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
+      Sqflite.setDebugModeOn(true); // Activa el modo de depuración
 
       runApp(app);
       FlutterError.onError = (details) {
